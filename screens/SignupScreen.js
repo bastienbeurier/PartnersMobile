@@ -8,6 +8,29 @@ export default class SignupScreen extends React.Component {
       error_message: ""
     }
   }  
+
+  submitSignupForm(username, password, email) {
+    return fetch('https://partners-web.herokuapp.com/api/users', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        email: email
+      }),
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.props.navigation.navigate('Login');
+    })
+    .catch((error) => {
+      this.setState({error_message:error.message})
+    });
+  }
+
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -61,7 +84,7 @@ export default class SignupScreen extends React.Component {
                 return;
             }
 
-            this.props.navigation.navigate('Splash')
+            this.submitSignupForm(this.state.username, this.state.password, this.state.email)
           }}
         />
         <Text style={{fontSize: 15}}>
