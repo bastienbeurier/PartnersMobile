@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React from 'react';
+import { View, Text } from 'react-native';
 
 export default class SplashScreen extends React.Component {
   static navigationOptions = {
@@ -8,7 +8,7 @@ export default class SplashScreen extends React.Component {
   render() {
     const {navigate} = this.props.navigation;
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Text>Splash Screen</Text>
       </View>
     );

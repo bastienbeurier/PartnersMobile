@@ -1,11 +1,11 @@
-import React from "react";
-import { Button, View, Text, TextInput } from "react-native";
+import React from 'react';
+import { Button, View, Text, TextInput } from 'react-native';
 
 export default class SignupScreen extends React.Component {
   constructor() {
     super();
     this.state = {
-      error_message: ""
+      error_message: ''
     }
   }  
 
@@ -63,28 +63,31 @@ export default class SignupScreen extends React.Component {
           onPress={() => {
             let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ;
             if (reg.test(this.state.email) === false) {
-                this.setState({error_message:"Invalid email."})
+                this.setState({error_message:'Invalid email.'})
                 return;
             } 
 
             reg = /[a-zA-Z0-9_]{1,20}/ ;
             if (reg.test(this.state.username) === false) {
-                this.setState({error_message:"Invalid username (1-20 chars)."})
+                this.setState({error_message:'Invalid username (1-20 chars).'});
                 return;
             }
 
             reg = /[a-zA-Z0-9~!@#$%^&*()_+=-]{6,20}/ ;
             if (reg.test(this.state.password) === false) {
-                this.setState({error_message:"Invalid password (6-20 chars)."})
+                this.setState({error_message:'Invalid password (6-20 chars).'});
                 return;
             }
 
             if (this.state.password != this.state.confirm_password) {
-                this.setState({error_message:"Passwords don't match."})
+                this.setState({error_message:'Passwords don\'t match.'});
                 return;
             }
 
-            this.submitSignupForm(this.state.username, this.state.password, this.state.email)
+            this.submitSignupForm(
+              this.state.username, 
+              this.state.password, 
+              this.state.email)
           }}
         />
         <Text style={{fontSize: 15}}>
