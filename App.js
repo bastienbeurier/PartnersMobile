@@ -1,16 +1,16 @@
 import { createStackNavigator, createAppContainer } from 'react-navigation'
-import LoginScreen from './screens/LoginScreen.js'
-import SplashScreen from './screens/SplashScreen.js'
-import SignupScreen from './screens/SignupScreen.js'
+import LoginScreen from "./screens/LoginScreen.js"
+import SplashScreen from "./screens/SplashScreen.js"
+import SignupScreen from "./screens/SignupScreen.js"
 
 const AppNavigator = createStackNavigator(
   {
     Login: LoginScreen,
     Splash: SplashScreen,
-    Signup: SignupScreen
+    Signup: SignupScreen,
   },
   {
-    initialRouteName: 'Login'
+    initialRouteName: "Login"
   }
 )
 
