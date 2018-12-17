@@ -1,5 +1,6 @@
 import React from "react";
-import { ActivityIndicator, Alert, Button, View, Text, TextInput } from "react-native";
+import { ActivityIndicator, Alert, Button, View, TextInput } from "react-native";
+import * as Constants from "../Constants.js";
 
 export default class SignupScreen extends React.Component {
   constructor() {
@@ -11,10 +12,10 @@ export default class SignupScreen extends React.Component {
 
   submitSignupForm(username, password, email) {
     this.setState({
-      isLoading: true
+      isLoading: true,
     });
 
-    return fetch("https://partners-web.herokuapp.com/api/users", {
+    return fetch(Constants.API_URL + "users", {
       method: "POST",
       headers: {
         Accept: "application/json",
