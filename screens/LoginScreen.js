@@ -1,7 +1,7 @@
 import React from "react";
-import {Headers, Button, View, TextInput, Alert, ActivityIndicator} from "react-native";
-import * as Constants from "../Constants.js";
-import * as base64 from "base-64";
+import {Button, View, TextInput, Alert, ActivityIndicator} from "react-native";
+import { NavigationActions, StackActions } from "react-navigation";
+import ApiUtils from "../utils/ApiUtils.js";
 
 export default class LoginScreen extends React.Component {
   constructor() {
@@ -11,30 +11,37 @@ export default class LoginScreen extends React.Component {
     };
   }
 
+  goToSplash() {
+    const splash = StackActions.reset({
+      index: 0,
+      actions: [ NavigationActions.navigate({ routeName: "Splash" })],
+    });
+    this.props.navigation.dispatch(splash);
+  }
+
+  loginSuccess(jsonResponse) {
+
+  }
+
+  loginFailure(error) {
+
+  }
+
   submitLoginForm(email, password) {
     this.setState({
       isLoading: true,
     });
 
-    return fetch(Constants.API_URL + "tokens", {
-      method: "POST",
-      headers: {
-        "Authorization": "Basic " + base64.encode(email + ":" + password),
+    ApiUtils.makeRequestWithCredentials(
+      "tokens",
+      "POST",
+      email,
+      password,
+      (jsonResponse) => {
+        ApiUtils.saveToken(jsonResponse.token);
+        this.goToSplash();
       },
-    })
-      .then(response => response.json())
-      .then(responseJson => {
-        if (responseJson.error) {
-          Alert.alert(responseJson.message);
-        } else {
-          this.props.navigation.navigate("Splash");
-        }
-
-        this.setState({
-          isLoading: false,
-        });
-      })
-      .catch(error => {
+      (error) => {
         Alert.alert(error.message);
         this.setState({
           isLoading: false,
