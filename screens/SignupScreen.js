@@ -1,6 +1,7 @@
 import React from "react";
 import { ActivityIndicator, Alert, Button, View, TextInput } from "react-native";
-import * as Constants from "../Constants.js";
+import ApiUtils from "../utils/ApiUtils";
+import {NavigationActions, StackActions} from "react-navigation";
 
 export default class SignupScreen extends React.Component {
   constructor() {
@@ -10,37 +11,37 @@ export default class SignupScreen extends React.Component {
     };
   }
 
+  goToLogin() {
+    const splash = StackActions.reset({
+      index: 0,
+      actions: [ NavigationActions.navigate({ routeName: "Login" })],
+    });
+    this.props.navigation.dispatch(splash);
+  }
+
   submitSignupForm(username, password, email) {
     this.setState({
       isLoading: true,
     });
 
-    return fetch(Constants.API_URL + "users", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    ApiUtils.makeRequest(
+      "users",
+      "POST",
+      {},
+      JSON.stringify({
         username: username,
         password: password,
         email: email,
       }),
-    })
-      .then(response => response.json())
-      .then(responseJson => {
-        if (responseJson.error) {
-          Alert.alert(responseJson.message);
-        } else {
-          this.props.navigation.navigate("Login");
-          Alert.alert("Signup successful! Please login.");
-        }
+      (jsonResponse) => {
+        this.goToLogin();
+        Alert.alert("Signup successful! Please login.");
 
         this.setState({
           isLoading: false,
         });
-      })
-      .catch(error => {
+      },
+      (error) => {
         Alert.alert(error.message);
         this.setState({
           isLoading: false,

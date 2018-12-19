@@ -19,14 +19,6 @@ export default class LoginScreen extends React.Component {
     this.props.navigation.dispatch(splash);
   }
 
-  loginSuccess(jsonResponse) {
-
-  }
-
-  loginFailure(error) {
-
-  }
-
   submitLoginForm(email, password) {
     this.setState({
       isLoading: true,

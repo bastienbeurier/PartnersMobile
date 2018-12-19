@@ -19,10 +19,10 @@ export default class ApiUtils {
       "Authorization": "Basic " + base64.encode(email + ":" + password),
     };
 
-    return this.makeRequest(endpoint, requestType, headers, successHandler, failureHandler);
+    return this.makeRequest(endpoint, requestType, headers, {}, successHandler, failureHandler);
   }
 
-  static async makeRequestWithToken(endpoint, requestType, successHandler, failureHandler) {
+  static async makeRequestWithToken(endpoint, requestType, body, successHandler, failureHandler) {
     let token = null;
     if (ApiUtils.token) {
       token = ApiUtils.token;
@@ -37,13 +37,14 @@ export default class ApiUtils {
     }
 
     const headers = token && token.length > 0 ? {"Authorization:Bearer": token} : {};
-    return this.makeRequest(endpoint, requestType, headers, successHandler, failureHandler);
+    return this.makeRequest(endpoint, requestType, headers, body, successHandler, failureHandler);
   }
 
-  static async makeRequest(endpoint, requestType, headers, successHandler, failureHandler) {
+  static async makeRequest(endpoint, requestType, headers, body, successHandler, failureHandler) {
     return fetch(Constants.API_URL + endpoint, {
       method: requestType,
       headers: headers,
+      body: body,
     })
       .then(response => response.json())
       .then(responseJson => {
