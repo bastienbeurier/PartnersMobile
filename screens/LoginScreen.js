@@ -24,7 +24,7 @@ export default class LoginScreen extends React.Component {
       isLoading: true,
     });
 
-    ApiUtils.makeRequestWithCredentials(
+    ApiUtils.makeLoginRequest(
       "tokens",
       "POST",
       email,
@@ -33,8 +33,8 @@ export default class LoginScreen extends React.Component {
         ApiUtils.saveToken(jsonResponse.token);
         this.goToSplash();
       },
-      (error) => {
-        Alert.alert(error.message);
+      (errorMessage) => {
+        Alert.alert(errorMessage);
         this.setState({
           isLoading: false,
         });

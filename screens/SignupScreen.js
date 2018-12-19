@@ -19,30 +19,24 @@ export default class SignupScreen extends React.Component {
     this.props.navigation.dispatch(splash);
   }
 
-  submitSignupForm(username, password, email) {
+  submitSignupForm(email, username, password) {
     this.setState({
       isLoading: true,
     });
 
-    ApiUtils.makeRequest(
-      "users",
-      "POST",
-      {},
-      JSON.stringify({
-        username: username,
-        password: password,
-        email: email,
-      }),
+    console.log("email: " + email);
+    console.log("username: " + username);
+    console.log("password: " + password);
+    ApiUtils.makeSignupRequest(email, username, password,
       (jsonResponse) => {
         this.goToLogin();
         Alert.alert("Signup successful! Please login.");
-
         this.setState({
           isLoading: false,
         });
       },
-      (error) => {
-        Alert.alert(error.message);
+      (errorMessage) => {
+        Alert.alert(errorMessage);
         this.setState({
           isLoading: false,
         });
@@ -108,9 +102,9 @@ export default class SignupScreen extends React.Component {
             }
 
             this.submitSignupForm(
+              this.state.email,
               this.state.username,
               this.state.password,
-              this.state.email,
             );
           }}/>
       </View>;
