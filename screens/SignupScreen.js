@@ -27,7 +27,7 @@ export default class SignupScreen extends React.Component {
     console.log("email: " + email);
     console.log("username: " + username);
     console.log("password: " + password);
-    ApiUtils.makeSignupRequest(email, username, password,
+    ApiUtils.signup(email, username, password,
       (jsonResponse) => {
         this.goToLogin();
         Alert.alert("Signup successful! Please login.");

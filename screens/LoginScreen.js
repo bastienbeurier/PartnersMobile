@@ -24,7 +24,7 @@ export default class LoginScreen extends React.Component {
       isLoading: true,
     });
 
-    ApiUtils.makeLoginRequest(
+    ApiUtils.login(
       "tokens",
       "POST",
       email,

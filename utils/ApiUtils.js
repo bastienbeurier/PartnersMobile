@@ -8,78 +8,62 @@ export default class ApiUtils {
 
   static async saveToken(token) {
     try {
+      ApiUtils.token = token; // TODO BB: load token on app start.
       await AsyncStorage.setItem(Constants.TOKEN_KEY, token);
     } catch (error) {
      console.log("Could not save auth token.");
     }
   }
 
-  static async authHeaders(headers) {
-    let token = null;
-    if (ApiUtils.token) {
-      headers["Authorization:Bearer"] = ApiUtils.token;
-    } else {
-      try {
-        token = await AsyncStorage.getItem(Constants.TOKEN_KEY);
-      } catch (error) {
-        console.log("Error while retrieve token");
-      }
-
-      if (token && token.length > 0) {
-        headers["Authorization:Bearer"] = token;
-        ApiUtils.token = token;
-      }
-    }
-
-    return headers;
-  }
-
-  static async makeRequest(endpoint, requestType, headers, body, authorized, successHandler, failureHandler) {
-    if (authorized) {
-      headers = ApiUtils.authHeaders(headers);
+  static async enrichedHeaders(headers, authorized) {
+    if (authorized && ApiUtils.token && ApiUtils.token.length) {
+      headers.Authorization = "Bearer " + ApiUtils.token;
     }
 
     headers.Accept = "application/json";
     headers["Content-Type"] = "application/json";
+    return headers;
+  }
 
+  static async makeRequest(endpoint, requestType, headers, body, authorized, success, failure) {
     return fetch(Constants.API_URL + endpoint, {
       method: requestType,
-      headers: headers,
-      body: JSON.stringify(body),
+      headers: ApiUtils.enrichedHeaders(headers, authorized),
+      body: body ? JSON.stringify(body) : null,
     })
       .then(response => response.json())
       .then(responseJson => {
         if (responseJson.error) {
-          failureHandler(responseJson.message);
+          failure(responseJson.message);
         } else {
-          successHandler(responseJson);
+          success(responseJson);
         }
       })
       .catch(error => {
-        failureHandler(error.message);
+        failure(error.message);
       });
   }
 
-  static async makeLoginRequest(endpoint, requestType, email, password, successHandler, failureHandler) {
-    const headers = {
-      "Authorization": "Basic " + base64.encode(email + ":" + password),
-    };
-
-    return this.makeRequest(endpoint, requestType, headers, {}, false, successHandler, failureHandler);
+  static async login(endpoint, requestType, email, password, success, failure) {
+    const headers = { "Authorization": "Basic " + base64.encode(email + ":" + password) };
+    return this.makeRequest(endpoint, requestType, headers, {}, false, success, failure);
   }
 
-  static async makeSignupRequest(email, username, password, sucessHandler, failureHandler) {
-    ApiUtils.makeRequest(
-      "users",
-      "POST",
-      {},
+  static async signup(email, username, password, success, failure) {
+    ApiUtils.makeRequest("users","POST", {},
       {
         username: username,
         password: password,
         email: email,
-      },
-      false,
-      sucessHandler,
-      failureHandler);
+      }, false, success, failure);
+  }
+
+  static async signout(success, failure) {
+    ApiUtils.makeRequest("tokens","DELETE",{},{},true,
+      (jsonResponse) => {
+        ApiUtils.token = null;
+        ApiUtils.saveToken(null);
+        success(jsonResponse);
+      }, failure);
   }
 }
