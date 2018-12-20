@@ -16,6 +16,8 @@ export default class ApiUtils {
   }
 
   static async enrichedHeaders(headers, authorized) {
+    headers = headers ? headers : {};
+
     if (authorized && ApiUtils.token && ApiUtils.token.length) {
       headers.Authorization = "Bearer " + ApiUtils.token;
     }
@@ -26,11 +28,10 @@ export default class ApiUtils {
   }
 
   static async makeRequest(endpoint, requestType, headers, body, authorized, success, failure) {
-    return fetch(Constants.API_URL + endpoint, {
-      method: requestType,
-      headers: ApiUtils.enrichedHeaders(headers, authorized),
-      body: body ? JSON.stringify(body) : null,
-    })
+    headers = ApiUtils.enrichedHeaders(headers, authorized);
+    body = body ? JSON.stringify(body) : null;
+
+    return fetch(Constants.API_URL + endpoint, {method: requestType, headers: headers, body: body})
       .then(response => response.json())
       .then(responseJson => {
         if (responseJson.error) {
@@ -44,9 +45,9 @@ export default class ApiUtils {
       });
   }
 
-  static async login(endpoint, requestType, email, password, success, failure) {
+  static async login(email, password, success, failure) {
     const headers = { "Authorization": "Basic " + base64.encode(email + ":" + password) };
-    return this.makeRequest(endpoint, requestType, headers, {}, false, success, failure);
+    return this.makeRequest("tokens", "POST", headers, {}, false, success, failure);
   }
 
   static async signup(email, username, password, success, failure) {

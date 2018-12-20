@@ -24,11 +24,7 @@ export default class LoginScreen extends React.Component {
       isLoading: true,
     });
 
-    ApiUtils.login(
-      "tokens",
-      "POST",
-      email,
-      password,
+    ApiUtils.login(email, password,
       (jsonResponse) => {
         ApiUtils.saveToken(jsonResponse.token);
         this.goToSplash();
