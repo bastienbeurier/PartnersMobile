@@ -1,35 +1,30 @@
 import React from "react";
-import {Alert, View, Button} from "react-native";
+import {Text, View } from "react-native";
 import {NavigationActions, StackActions} from "react-navigation";
 import ApiUtils from "../utils/ApiUtils.js";
 
 export default class SplashScreen extends React.Component {
 
-  goToLogin() {
-    const login = StackActions.reset({
-      index: 0,
-      actions: [ NavigationActions.navigate({ routeName: "Login" })],
+  componentWillMount(){
+    ApiUtils.retrieveToken(() => {
+      this.goTo("CreateTask");
+    }, () => {
+      this.goTo("Login");
     });
-    this.props.navigation.dispatch(login);
   }
 
-  signout() {
-    this.goToLogin();
-
-    ApiUtils.signout((jsonResponse) =>
-      {},
-      (errorMessage) => {
-        Alert.alert(errorMessage);
-      });
+  goTo(screen) {
+    const login = StackActions.reset({
+      index: 0,
+      actions: [ NavigationActions.navigate({ routeName: screen })],
+    });
+    this.props.navigation.dispatch(login);
   }
 
   render() {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Button
-          title="Logout"
-          onPress={() => this.signout()}
-        />
+        <Text>Partners</Text>
       </View>
     );
   }

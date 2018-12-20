@@ -8,10 +8,31 @@ export default class ApiUtils {
 
   static async saveToken(token) {
     try {
-      ApiUtils.token = token; // TODO BB: load token on app start.
-      await AsyncStorage.setItem(Constants.TOKEN_KEY, token);
+      ApiUtils.token = token;
+      if (token) {
+        await AsyncStorage.setItem(Constants.TOKEN_KEY, token);
+      } else {
+        console.log("Removing token");
+        await AsyncStorage.removeItem(Constants.TOKEN_KEY);
+      }
     } catch (error) {
-     console.log("Could not save auth token.");
+     console.error(error);
+    }
+  }
+
+  static async retrieveToken(success, failure) {
+    try {
+      const token = await AsyncStorage.getItem(Constants.TOKEN_KEY);
+      if (token !== null) {
+        console.log("Token: " + token);
+        ApiUtils.token = token;
+        success();
+      } else {
+        failure();
+      }
+    } catch (error) {
+      console.error(error);
+      failure();
     }
   }
 
@@ -67,6 +88,10 @@ export default class ApiUtils {
         ApiUtils.token = null;
         ApiUtils.saveToken(null);
         success(jsonResponse);
-      }, failure);
+      }, (errorMessage) => {
+        ApiUtils.token = null;
+        ApiUtils.saveToken(null);
+        failure(errorMessage);
+      });
   }
 }
