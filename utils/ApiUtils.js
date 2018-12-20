@@ -15,23 +15,25 @@ export default class ApiUtils {
     }
   }
 
-  static async enrichedHeaders(headers, authorized) {
-    headers = headers ? headers : {};
+  static async makeRequest(endpoint, requestType, headers, body, authorized, success, failure) {
+    let enrichedHeaders = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
 
     if (authorized && ApiUtils.token && ApiUtils.token.length) {
-      headers.Authorization = "Bearer " + ApiUtils.token;
+      enrichedHeaders.Authorization = "Bearer " + ApiUtils.token;
     }
 
-    headers.Accept = "application/json";
-    headers["Content-Type"] = "application/json";
-    return headers;
-  }
+    Object.keys(headers).forEach(key => {
+      enrichedHeaders[key] = headers[key];
+    });
 
-  static async makeRequest(endpoint, requestType, headers, body, authorized, success, failure) {
-    headers = ApiUtils.enrichedHeaders(headers, authorized);
-    body = body ? JSON.stringify(body) : null;
-
-    return fetch(Constants.API_URL + endpoint, {method: requestType, headers: headers, body: body})
+    return fetch(Constants.API_URL + endpoint, {
+      method: requestType,
+      headers: enrichedHeaders,
+      body: body ? JSON.stringify(body) : null,
+    })
       .then(response => response.json())
       .then(responseJson => {
         if (responseJson.error) {
