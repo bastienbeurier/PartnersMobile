@@ -1,6 +1,7 @@
 import * as Constants from "../Constants";
 import * as base64 from "base-64";
-import {AsyncStorage} from "react-native";
+import {Alert, AsyncStorage} from "react-native";
+import {NavigationActions, StackActions} from "react-navigation";
 
 export default class ApiUtils {
 
@@ -36,7 +37,23 @@ export default class ApiUtils {
     }
   }
 
-  static async makeRequest(endpoint, requestType, headers, body, authorized, success, failure) {
+  static deleteToken(context, redirect) {
+    ApiUtils.token = null;
+    ApiUtils.saveToken(null);
+
+    if (!redirect || !context) {
+      return;
+    }
+
+    const login = StackActions.reset({
+      index: 0,
+      actions: [ NavigationActions.navigate({ routeName: "Login" })],
+    });
+    context.props.navigation.dispatch(login);
+    Alert.alert("Credentials expired, please login again.");
+  }
+
+  static async makeRequest(context, endpoint, requestType, headers, body, authorized, success, failure) {
     let enrichedHeaders = {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -58,7 +75,11 @@ export default class ApiUtils {
       .then(response => response.json())
       .then(responseJson => {
         if (responseJson.error) {
-          failure(responseJson.message);
+          if (responseJson.error === "Unauthorized") {
+            this.deleteToken(context, true);
+          } else {
+            failure(responseJson.message);
+          }
         } else {
           success(responseJson);
         }
@@ -68,13 +89,13 @@ export default class ApiUtils {
       });
   }
 
-  static async login(email, password, success, failure) {
+  static async login(context, email, password, success, failure) {
     const headers = { "Authorization": "Basic " + base64.encode(email + ":" + password) };
-    return this.makeRequest("tokens", "POST", headers, {}, false, success, failure);
+    return this.makeRequest(context, "tokens", "POST", headers, {}, false, success, failure);
   }
 
-  static async signup(email, username, password, success, failure) {
-    ApiUtils.makeRequest("users","POST", {},
+  static async signup(context, email, username, password, success, failure) {
+    ApiUtils.makeRequest(context, "users","POST", {},
       {
         username: username,
         password: password,
@@ -82,16 +103,22 @@ export default class ApiUtils {
       }, false, success, failure);
   }
 
-  static async signout(success, failure) {
-    ApiUtils.makeRequest("tokens","DELETE",{},{},true,
+  static async signout(context, success, failure) {
+    ApiUtils.makeRequest(context, "tokens","DELETE",{},{},true,
       (jsonResponse) => {
-        ApiUtils.token = null;
-        ApiUtils.saveToken(null);
+        this.deleteToken(null, false);
         success(jsonResponse);
       }, (errorMessage) => {
-        ApiUtils.token = null;
-        ApiUtils.saveToken(null);
+        this.deleteToken(null, false);
         failure(errorMessage);
       });
+  }
+
+  static async createTask(context, category, duration, note, success, failure) {
+    ApiUtils.makeRequest(context, "tasks","POST",{},{
+        category: category,
+        duration: duration,
+      },true,
+      success,failure);
   }
 }

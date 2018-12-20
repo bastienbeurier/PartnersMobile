@@ -14,13 +14,18 @@ export default class CreateTaskScreen extends React.Component {
   }
 
   signout() {
-    this.goToLogin();
+    // this.goToLogin();
+    //
+    // ApiUtils.signout(this, (jsonResponse) => {},
+    //   (errorMessage) => {
+    //     Alert.alert(errorMessage);
+    //   });
 
-    ApiUtils.signout((jsonResponse) =>
-      {},
-      (errorMessage) => {
-        Alert.alert(errorMessage);
-      });
+    ApiUtils.createTask(this, "category1", 5, "",(jsonResponse) => {
+      Alert.alert("success");
+    }, (errorMessage) => {
+      Alert.alert(errorMessage);
+    });
   }
 
   render() {
