@@ -7,7 +7,7 @@ export default class SplashScreen extends React.Component {
 
   componentWillMount(){
     ApiUtils.retrieveToken(() => {
-      this.goTo("CreateTask");
+      this.goTo("TaskList");
     }, () => {
       this.goTo("Login");
     });

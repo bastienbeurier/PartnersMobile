@@ -11,10 +11,10 @@ export default class LoginScreen extends React.Component {
     };
   }
 
-  goToSplash() {
+  goToTaskList() {
     const splash = StackActions.reset({
       index: 0,
-      actions: [ NavigationActions.navigate({ routeName: "Splash" })],
+      actions: [ NavigationActions.navigate({ routeName: "TaskList" })],
     });
     this.props.navigation.dispatch(splash);
   }
@@ -27,7 +27,7 @@ export default class LoginScreen extends React.Component {
     ApiUtils.login(this, email, password,
       (jsonResponse) => {
         ApiUtils.saveToken(jsonResponse.token);
-        this.goToSplash();
+        this.goToTaskList();
       },
       (errorMessage) => {
         Alert.alert(errorMessage);
