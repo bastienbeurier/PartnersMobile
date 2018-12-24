@@ -114,17 +114,6 @@ export default class ApiUtils {
       }, false, success, failure);
   }
 
-  static async signout(context, success, failure) {
-    ApiUtils.makeRequest(context, "tokens","DELETE",{},{},true,
-      (jsonResponse) => {
-        this.deleteToken(null, false);
-        success(jsonResponse);
-      }, (errorMessage) => {
-        this.deleteToken(null, false);
-        failure(errorMessage);
-      });
-  }
-
   static async createTask(context, category, duration, comment, success, failure) {
     ApiUtils.makeRequest(context, "tasks","POST",{},{
         category: category,
