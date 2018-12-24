@@ -53,6 +53,17 @@ export default class ApiUtils {
     Alert.alert("Credentials expired, please login again.");
   }
 
+  static endpointWithParams(endpoint, params) {
+    let newEndpoint = endpoint;
+    let index = 0;
+    Object.keys(params).forEach(key => {
+      newEndpoint += (index > 0 ? "&" : "?") + [encodeURIComponent(key), encodeURIComponent(params[key])].join("=");
+      index++;
+    });
+
+    return newEndpoint;
+  }
+
   static async makeRequest(context, endpoint, requestType, headers, body, authorized, success, failure) {
     let enrichedHeaders = {
       Accept: "application/json",
@@ -120,6 +131,22 @@ export default class ApiUtils {
         duration: duration,
         comment: comment,
       },true,
+      success,failure);
+  }
+
+  static async getTaskSummary(context, beforeDate, afterDate, success, failure) {
+    let dateFormat = require("dateformat");
+    let utcBeforeDate = new Date(beforeDate);
+    let utcAfterDate = new Date(afterDate);
+    utcBeforeDate.setMinutes(beforeDate.getMinutes() + beforeDate.getTimezoneOffset());
+    utcAfterDate.setMinutes(afterDate.getMinutes() + afterDate.getTimezoneOffset());
+
+    const endpoint = this.endpointWithParams("tasks", {
+      before: dateFormat(utcBeforeDate, Constants.DATE_FORMAT),
+      after: dateFormat(utcAfterDate, Constants.DATE_FORMAT),
+    });
+
+    ApiUtils.makeRequest(context, endpoint,"GET",{},null,true,
       success,failure);
   }
 }

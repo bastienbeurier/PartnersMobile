@@ -1,5 +1,5 @@
 import React from "react";
-import {FlatList, Text, TouchableOpacity, View} from "react-native";
+import {Button, FlatList, Text, TouchableOpacity, View} from "react-native";
 import PropTypes from "prop-types";
 
 
@@ -28,9 +28,28 @@ TaskListItem.propTypes = {
 
 export default class TaskListScreen extends React.Component {
 
+  static navigationOptions = ({ navigation }) => {
+    return {
+      headerLeft: (
+        <Button
+          onPress={navigation.getParam("goToSummary")}
+          title="Summary"
+        />
+      ),
+    };
+  };
+
+  componentDidMount() {
+    this.props.navigation.setParams({ goToSummary: this._goToSummary });
+  }
+
   goToCreateTask(categoryKey) {
     this.props.navigation.navigate("CreateTask", {categoryKey: categoryKey});
   }
+
+  _goToSummary = () => {
+    this.props.navigation.navigate("Summary");
+  };
 
   _onPressItem = (id: string) => {
     this.setState((state) => {
@@ -51,7 +70,7 @@ export default class TaskListScreen extends React.Component {
       <FlatList
         columnWrapperStyle={{
           flex: 1,
-          justifyContent: "space-around"
+          justifyContent: "space-around",
         }}
         data={[
           {key: "laundry", title: "Laundry"},
