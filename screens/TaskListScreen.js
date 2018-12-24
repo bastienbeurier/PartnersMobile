@@ -12,7 +12,7 @@ class TaskListItem extends React.PureComponent {
   render() {
     return (
       <TouchableOpacity onPress={this._onPress}>
-        <View>
+        <View style={{height: 120, justifyContent: "center"}}>
           <Text>
             {this.props.title}
           </Text>
@@ -49,6 +49,10 @@ export default class TaskListScreen extends React.Component {
   render() {
     return (
       <FlatList
+        columnWrapperStyle={{
+          flex: 1,
+          justifyContent: "space-around"
+        }}
         data={[
           {key: "laundry", title: "Laundry"},
           {key: "dishes", title: "Dishes"},
@@ -66,6 +70,7 @@ export default class TaskListScreen extends React.Component {
         ]}
         extraData={this.state}
         renderItem={this._renderItem}
+        numColumns={4}
       />
     );
   }

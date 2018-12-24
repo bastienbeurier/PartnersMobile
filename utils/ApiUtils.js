@@ -114,10 +114,11 @@ export default class ApiUtils {
       });
   }
 
-  static async createTask(context, category, duration, note, success, failure) {
+  static async createTask(context, category, duration, comment, success, failure) {
     ApiUtils.makeRequest(context, "tasks","POST",{},{
         category: category,
         duration: duration,
+        comment: comment,
       },true,
       success,failure);
   }
