@@ -1,13 +1,12 @@
-1. Actionable list of tasks
-2. Create task form
-3. Show report with name of partner
-4. Navigate dates (day, week, month, year)
-5. Invite friend (invite screen showing received and sent request)
+1. Invitations
+2. Delete tasks
+3. Logout
+4. Navigate summary dates
 
 Later:
 
 Order by most frequent task
-Logout
 Remove partner
 Tasks are partner-dependent
 Multiple partners
+Specify date for task

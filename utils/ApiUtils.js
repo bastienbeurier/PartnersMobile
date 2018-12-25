@@ -138,4 +138,21 @@ export default class ApiUtils {
     ApiUtils.makeRequest(context, endpoint,"GET",{},null,true,
       success,failure);
   }
+
+  static async getTaskPerCategory(context, category, beforeDate, afterDate, success, failure) {
+    let dateFormat = require("dateformat");
+    let utcBeforeDate = new Date(beforeDate);
+    let utcAfterDate = new Date(afterDate);
+    utcBeforeDate.setMinutes(beforeDate.getMinutes() + beforeDate.getTimezoneOffset());
+    utcAfterDate.setMinutes(afterDate.getMinutes() + afterDate.getTimezoneOffset());
+
+    const endpoint = this.endpointWithParams("category_tasks", {
+      before: dateFormat(utcBeforeDate, Constants.DATE_FORMAT),
+      after: dateFormat(utcAfterDate, Constants.DATE_FORMAT),
+      category: category,
+    });
+
+    ApiUtils.makeRequest(context, endpoint,"GET",{},null,true,
+      success,failure);
+  }
 }

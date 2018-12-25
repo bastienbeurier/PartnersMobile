@@ -27,29 +27,31 @@ SummaryListItem.propTypes = {
   onPressItem: PropTypes.func,
 };
 
-export default class SplashScreen extends React.Component {
+export default class SummaryScreen extends React.Component {
 
   constructor(props) {
     super(props);
+
+    let before = new Date();
+    let after = new Date();
+    after.setDate(after.getDate() - 7);
 
     this.state = {
       isLoading: false,
       data: [],
       username: "You",
       partnerUsername: "Partner",
+      before: before,
+      after: after,
     };
   }
 
   componentWillMount(){
-    let before = new Date();
-    let after = new Date();
-    after.setDate(after.getDate() - 7);
-
     this.setState({
       isLoading: true,
     });
 
-    ApiUtils.getTaskSummary(this, before, after,
+    ApiUtils.getTaskSummary(this, this.state.before, this.state.after,
       (jsonResponse) => {
         let summary = jsonResponse["category_summaries"];
         const compoundValues = this.buildCompoundSummaryItem(summary);
@@ -88,19 +90,30 @@ export default class SplashScreen extends React.Component {
     };
   }
 
-  goToCategoryHistory() {}
+  goToCategoryHistory(category) {
+    this.props.navigation.navigate("TasksForCategory",
+      {
+        category: category,
+        before: this.state.before,
+        after: this.state.after,
+        title: category.toUpperCase(),
+      });
+  }
 
   _onPressItem = (id: string) => {
     this.setState((state) => {
-      this.goToCategoryHistory();
+      const index = parseInt(id, 10);
+      if (index > 0) {
+        this.goToCategoryHistory(this.state.data[index]["category"]);
+      }
     });
   };
 
-  _renderItem = ({item}) => (
+  _renderItem = ({item, index}) => (
     <SummaryListItem
       onPressItem={this._onPressItem}
       title={this.titleForSummaryItem(item)}
-      id={item.key}
+      id={"" + index}
     />
   );
 
